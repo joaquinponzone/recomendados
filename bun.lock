@@ -3,7 +3,7 @@
   "configVersion": 1,
   "workspaces": {
     "": {
-      "name": "recomendados-app",
+      "name": "recomendados",
       "dependencies": {
         "@libsql/client": "^0.17.2",
         "@vercel/analytics": "^2.0.1",

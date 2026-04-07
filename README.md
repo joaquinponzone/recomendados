@@ -1,4 +1,4 @@
-# Recomendados (`recomendados-app`)
+# Recomendados (`recomendados`)
 
 Aplicación web donde personas autenticadas publican recomendaciones de **películas, series o libros** (título, descripción, imagen y enlace a la ficha). El resto puede **votar a favor o en contra**; los listados priorizan el consenso (saldo neto de votos), con desempates definidos en la especificación. La interfaz está pensada en **español**, con criterio **rioplatense** cuando encaja.
 
