@@ -35,19 +35,19 @@ export async function createRecommendation(
     finalImageUrl = imageUrlRaw.trim();
   }
 
-  if (!finalImageUrl) {
-    return { error: "Subí una imagen o pegá una URL." };
-  }
-
   const parsed = CreateRecommendationSchema.safeParse({
     title: formData.get("title"),
     description: formData.get("description"),
+    kind: formData.get("kind"),
     imageUrl: finalImageUrl,
     externalUrl: formData.get("externalUrl"),
+    bookAuthor: formData.get("bookAuthor"),
+    director: formData.get("director"),
+    mainActors: formData.get("mainActors"),
   });
 
   if (!parsed.success) {
-    if (blobUploaded) {
+    if (blobUploaded && finalImageUrl) {
       await deleteRecommendationBlobIfApplicable(finalImageUrl);
     }
     return { error: parsed.error.issues[0]?.message ?? "Datos inválidos." };
@@ -57,11 +57,18 @@ export async function createRecommendation(
   try {
     newId = await insertRecommendation({
       userId,
-      ...parsed.data,
+      title: parsed.data.title,
+      description: parsed.data.description,
+      kind: parsed.data.kind,
+      imageUrl: parsed.data.imageUrl ?? null,
+      externalUrl: parsed.data.externalUrl ?? null,
+      bookAuthor: parsed.data.bookAuthor ?? null,
+      director: parsed.data.director ?? null,
+      mainActors: parsed.data.mainActors ?? null,
     });
   } catch (err) {
     console.error("[createRecommendation] insert failed:", err);
-    if (blobUploaded) {
+    if (blobUploaded && finalImageUrl) {
       await deleteRecommendationBlobIfApplicable(finalImageUrl);
     }
     return { error: "No se pudo guardar la recomendación. Probá de nuevo." };

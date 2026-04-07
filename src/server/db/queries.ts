@@ -2,11 +2,11 @@
 
 import { and, desc, eq, inArray, sql } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
-
 import {
   REPUTATION_PER_RECOMMENDATION,
   REPUTATION_PER_VOTE,
 } from "@/lib/reputation";
+import type { RecommendationKind } from "@/lib/validations";
 
 import { db } from "./index";
 import { recommendations, recommendationVotes, users } from "./schema";
@@ -108,8 +108,12 @@ export interface RecommendationListRow {
   userId: number;
   title: string;
   description: string;
-  imageUrl: string;
-  externalUrl: string;
+  kind: RecommendationKind;
+  imageUrl: string | null;
+  externalUrl: string | null;
+  bookAuthor: string | null;
+  director: string | null;
+  mainActors: string | null;
   createdAt: string;
   authorName: string;
   authorNickname: string | null;
@@ -125,8 +129,12 @@ export async function listRecommendationsWithScore(): Promise<
       userId: recommendations.userId,
       title: recommendations.title,
       description: recommendations.description,
+      kind: recommendations.kind,
       imageUrl: recommendations.imageUrl,
       externalUrl: recommendations.externalUrl,
+      bookAuthor: recommendations.bookAuthor,
+      director: recommendations.director,
+      mainActors: recommendations.mainActors,
       createdAt: recommendations.createdAt,
       authorName: users.name,
       authorNickname: users.nickname,
@@ -139,7 +147,11 @@ export async function listRecommendationsWithScore(): Promise<
       desc(recommendations.createdAt),
       desc(recommendations.id),
     );
-  return rows.map((r) => ({ ...r, score: Number(r.score) }));
+  return rows.map((r) => ({
+    ...r,
+    kind: r.kind as RecommendationKind,
+    score: Number(r.score),
+  }));
 }
 
 export async function listRecommendationsByUserWithScore(
@@ -151,8 +163,12 @@ export async function listRecommendationsByUserWithScore(
       userId: recommendations.userId,
       title: recommendations.title,
       description: recommendations.description,
+      kind: recommendations.kind,
       imageUrl: recommendations.imageUrl,
       externalUrl: recommendations.externalUrl,
+      bookAuthor: recommendations.bookAuthor,
+      director: recommendations.director,
+      mainActors: recommendations.mainActors,
       createdAt: recommendations.createdAt,
       authorName: users.name,
       authorNickname: users.nickname,
@@ -166,7 +182,11 @@ export async function listRecommendationsByUserWithScore(
       desc(recommendations.createdAt),
       desc(recommendations.id),
     );
-  return rows.map((r) => ({ ...r, score: Number(r.score) }));
+  return rows.map((r) => ({
+    ...r,
+    kind: r.kind as RecommendationKind,
+    score: Number(r.score),
+  }));
 }
 
 export interface RecommendationDetail extends RecommendationListRow {
@@ -182,8 +202,12 @@ export async function getRecommendationById(
       userId: recommendations.userId,
       title: recommendations.title,
       description: recommendations.description,
+      kind: recommendations.kind,
       imageUrl: recommendations.imageUrl,
       externalUrl: recommendations.externalUrl,
+      bookAuthor: recommendations.bookAuthor,
+      director: recommendations.director,
+      mainActors: recommendations.mainActors,
       createdAt: recommendations.createdAt,
       updatedAt: recommendations.updatedAt,
       authorName: users.name,
@@ -196,7 +220,7 @@ export async function getRecommendationById(
     .limit(1);
   const r = rows[0];
   if (!r) return null;
-  return { ...r, score: Number(r.score) };
+  return { ...r, kind: r.kind as RecommendationKind, score: Number(r.score) };
 }
 
 export async function getCurrentUserVote(
@@ -248,8 +272,12 @@ export async function createRecommendation(input: {
   userId: number;
   title: string;
   description: string;
-  imageUrl: string;
-  externalUrl: string;
+  kind: RecommendationKind;
+  imageUrl: string | null;
+  externalUrl: string | null;
+  bookAuthor: string | null;
+  director: string | null;
+  mainActors: string | null;
 }): Promise<number> {
   const now = new Date().toISOString();
   return db.transaction(async (tx) => {
@@ -259,8 +287,12 @@ export async function createRecommendation(input: {
         userId: input.userId,
         title: input.title,
         description: input.description,
+        kind: input.kind,
         imageUrl: input.imageUrl,
         externalUrl: input.externalUrl,
+        bookAuthor: input.bookAuthor,
+        director: input.director,
+        mainActors: input.mainActors,
         createdAt: now,
         updatedAt: now,
       })
@@ -344,7 +376,7 @@ export interface DeleteRecommendationResult {
   recommendationId: number;
   authorId: number;
   voterIds: number[];
-  imageUrl: string;
+  imageUrl: string | null;
 }
 
 export async function deleteRecommendation(

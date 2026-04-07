@@ -1,9 +1,13 @@
 import {
+  index,
   integer,
   primaryKey,
   sqliteTable,
   text,
 } from "drizzle-orm/sqlite-core";
+
+/** Valores persistidos en `recommendations.kind` (alinear con `RECOMMENDATION_KINDS` en validaciones). */
+export const recommendationKindEnum = ["movie", "series", "book"] as const;
 
 export const users = sqliteTable("users", {
   id: integer("id").primaryKey({ autoIncrement: true }),
@@ -27,22 +31,35 @@ export const users = sqliteTable("users", {
     .$defaultFn(() => new Date().toISOString()),
 });
 
-export const recommendations = sqliteTable("recommendations", {
-  id: integer("id").primaryKey({ autoIncrement: true }),
-  userId: integer("user_id")
-    .notNull()
-    .references(() => users.id),
-  title: text("title").notNull(),
-  description: text("description").notNull(),
-  imageUrl: text("image_url").notNull(),
-  externalUrl: text("external_url").notNull(),
-  createdAt: text("created_at")
-    .notNull()
-    .$defaultFn(() => new Date().toISOString()),
-  updatedAt: text("updated_at")
-    .notNull()
-    .$defaultFn(() => new Date().toISOString()),
-});
+export const recommendations = sqliteTable(
+  "recommendations",
+  {
+    id: integer("id").primaryKey({ autoIncrement: true }),
+    userId: integer("user_id")
+      .notNull()
+      .references(() => users.id),
+    title: text("title").notNull(),
+    description: text("description").notNull(),
+    kind: text("kind", { enum: recommendationKindEnum })
+      .notNull()
+      .default("movie"),
+    imageUrl: text("image_url"),
+    externalUrl: text("external_url"),
+    bookAuthor: text("book_author"),
+    director: text("director"),
+    mainActors: text("main_actors"),
+    createdAt: text("created_at")
+      .notNull()
+      .$defaultFn(() => new Date().toISOString()),
+    updatedAt: text("updated_at")
+      .notNull()
+      .$defaultFn(() => new Date().toISOString()),
+  },
+  (table) => [
+    index("recommendations_user_id_idx").on(table.userId),
+    index("recommendations_created_at_idx").on(table.createdAt),
+  ],
+);
 
 export const recommendationVotes = sqliteTable(
   "recommendation_votes",

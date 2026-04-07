@@ -1,7 +1,7 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "4d3563c5-a433-4562-b0b3-23aad143dbb4",
+  "id": "5c850f81-91be-44e5-a695-dac613af4f95",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "recommendation_votes": {
@@ -49,8 +49,12 @@
           "name": "recommendation_votes_user_id_users_id_fk",
           "tableFrom": "recommendation_votes",
           "tableTo": "users",
-          "columnsFrom": ["user_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -58,15 +62,22 @@
           "name": "recommendation_votes_recommendation_id_recommendations_id_fk",
           "tableFrom": "recommendation_votes",
           "tableTo": "recommendations",
-          "columnsFrom": ["recommendation_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "recommendation_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
       },
       "compositePrimaryKeys": {
         "recommendation_votes_user_id_recommendation_id_pk": {
-          "columns": ["user_id", "recommendation_id"],
+          "columns": [
+            "user_id",
+            "recommendation_id"
+          ],
           "name": "recommendation_votes_user_id_recommendation_id_pk"
         }
       },
@@ -104,18 +115,47 @@
           "notNull": true,
           "autoincrement": false
         },
+        "kind": {
+          "name": "kind",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "'movie'"
+        },
         "image_url": {
           "name": "image_url",
           "type": "text",
           "primaryKey": false,
-          "notNull": true,
+          "notNull": false,
           "autoincrement": false
         },
         "external_url": {
           "name": "external_url",
           "type": "text",
           "primaryKey": false,
-          "notNull": true,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "book_author": {
+          "name": "book_author",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "director": {
+          "name": "director",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "main_actors": {
+          "name": "main_actors",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
           "autoincrement": false
         },
         "created_at": {
@@ -133,14 +173,33 @@
           "autoincrement": false
         }
       },
-      "indexes": {},
+      "indexes": {
+        "recommendations_user_id_idx": {
+          "name": "recommendations_user_id_idx",
+          "columns": [
+            "user_id"
+          ],
+          "isUnique": false
+        },
+        "recommendations_created_at_idx": {
+          "name": "recommendations_created_at_idx",
+          "columns": [
+            "created_at"
+          ],
+          "isUnique": false
+        }
+      },
       "foreignKeys": {
         "recommendations_user_id_users_id_fk": {
           "name": "recommendations_user_id_users_id_fk",
           "tableFrom": "recommendations",
           "tableTo": "users",
-          "columnsFrom": ["user_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -251,12 +310,16 @@
       "indexes": {
         "users_email_unique": {
           "name": "users_email_unique",
-          "columns": ["email"],
+          "columns": [
+            "email"
+          ],
           "isUnique": true
         },
         "users_nickname_unique": {
           "name": "users_nickname_unique",
-          "columns": ["nickname"],
+          "columns": [
+            "nickname"
+          ],
           "isUnique": true
         }
       },

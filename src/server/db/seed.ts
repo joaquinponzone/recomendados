@@ -45,9 +45,12 @@ async function seed() {
     title: "Matrix",
     description:
       "Ciencia ficción de los Wachowski: realidad simulada, acción icónica y filosofía accesible. Ficha en IMDb: https://www.imdb.com/es/title/tt0133093/ — podés borrar esta entrada cuando haya moderación en la app.",
+    kind: "movie",
     imageUrl:
       "https://biblioteca.ulpgc.es/sites/default/files/attachments_files/theend/Matrix.jpg",
     externalUrl: "https://www.netflix.com/ar/title/20557937",
+    director: "Lana y Lilly Wachowski",
+    mainActors: "Keanu Reeves, Laurence Fishburne, Carrie-Anne Moss",
     createdAt: now,
     updatedAt: now,
   });

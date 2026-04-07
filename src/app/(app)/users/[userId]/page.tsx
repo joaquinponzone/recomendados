@@ -57,10 +57,11 @@ export default async function UserProfilePage({
           Todavía no hay recomendaciones de este usuario.
         </p>
       ) : (
-        <ul className="grid gap-6 md:grid-cols-2">
+        <ul className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {rows.map((row) => (
             <li key={row.id}>
               <RecommendationCard
+                compact
                 row={row}
                 currentUserId={sessionUserId}
                 currentVote={voteMap.get(row.id) ?? null}

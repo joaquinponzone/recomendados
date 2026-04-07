@@ -3,7 +3,8 @@ import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 import { type SessionData, sessionOptions } from "@/lib/session";
 
-const publicAssetExtension = /\.(?:ico|png|jpg|jpeg|gif|webp|svg|woff2?|ttf|eot)$/i;
+const publicAssetExtension =
+  /\.(?:ico|png|jpg|jpeg|gif|webp|svg|woff2?|ttf|eot)$/i;
 
 export async function proxy(request: NextRequest) {
   if (publicAssetExtension.test(request.nextUrl.pathname)) {
