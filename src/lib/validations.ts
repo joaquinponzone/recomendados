@@ -12,7 +12,7 @@ export const RegisterSchema = z.object({
 });
 
 export const ForgotPasswordSchema = z.object({
-  email: z.email("Invalid email address"),
+  email: z.email("Introduce un correo electrónico válido."),
 });
 
 export const ResetPasswordSchema = z
