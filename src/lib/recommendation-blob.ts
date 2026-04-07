@@ -36,10 +36,11 @@ export function pathnameFromRecommendationBlobProxyUrl(
 }
 
 export async function deleteRecommendationBlobIfApplicable(
-  imageUrl: string,
+  imageUrl: string | null | undefined,
 ): Promise<void> {
   const token = process.env.BLOB_READ_WRITE_TOKEN;
   if (!token?.trim()) return;
+  if (imageUrl == null || !String(imageUrl).trim()) return;
 
   const fromProxy = pathnameFromRecommendationBlobProxyUrl(imageUrl);
   const target =

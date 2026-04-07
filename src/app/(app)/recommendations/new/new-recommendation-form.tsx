@@ -16,8 +16,15 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { RECOMMENDATION_IMAGE_MAX_BYTES } from "@/lib/recommendation-image-limits";
-import type { FormState } from "@/lib/validations";
+import type { FormState, RecommendationKind } from "@/lib/validations";
 
 const allowedClientMime = new Set([
   "image/jpeg",
@@ -41,8 +48,7 @@ export function NewRecommendationForm({
   const boundAction = useMemo(
     () => async (prev: FormState, formData: FormData) => {
       const fromForm = formData.get("imageFile");
-      const hasFormFile =
-        fromForm instanceof File && fromForm.size > 0;
+      const hasFormFile = fromForm instanceof File && fromForm.size > 0;
       const file = hasFormFile ? fromForm : pickedFileRef.current;
       if (file && file.size > 0) {
         formData.set("imageFile", file);
@@ -57,9 +63,12 @@ export function NewRecommendationForm({
   const [state, action, pending] = useActionState(boundAction, {});
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
+  const [kind, setKind] = useState<RecommendationKind>("movie");
   const [imageUrl, setImageUrl] = useState("");
   const [externalUrl, setExternalUrl] = useState("");
-  const [imageFieldError, setImageFieldError] = useState("");
+  const [bookAuthor, setBookAuthor] = useState("");
+  const [director, setDirector] = useState("");
+  const [mainActors, setMainActors] = useState("");
   const [filePickError, setFilePickError] = useState("");
   const [previewObjectUrl, setPreviewObjectUrl] = useState<string | null>(null);
   const titleInputRef = useRef<HTMLInputElement>(null);
@@ -93,23 +102,30 @@ export function NewRecommendationForm({
         </Button>
       </div>
       <div className="grid gap-10 lg:grid-cols-2 lg:items-start">
-        <form
-          action={action}
-          className="flex max-w-lg flex-col gap-4"
-          onSubmit={(e) => {
-            const hasFile = pickedFileRef.current !== null;
-            const hasUrl = imageUrl.trim().length > 0;
-            if (!hasFile && !hasUrl) {
-              e.preventDefault();
-              setImageFieldError("Subí una imagen o pegá una URL.");
-            }
-          }}
-        >
+        <form action={action} className="flex max-w-lg flex-col gap-4">
+          <input type="hidden" name="kind" value={kind} />
           {state.error ? (
             <Alert variant="destructive" aria-live="polite" aria-atomic="true">
               <AlertDescription>{state.error}</AlertDescription>
             </Alert>
           ) : null}
+          <div className="flex flex-col gap-2">
+            <Label htmlFor="rec-kind">Tipo</Label>
+            <Select
+              value={kind}
+              onValueChange={(v) => setKind(v as RecommendationKind)}
+              disabled={pending}
+            >
+              <SelectTrigger id="rec-kind" className="w-full max-w-full">
+                <SelectValue placeholder="Elegí el tipo" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="movie">Película</SelectItem>
+                <SelectItem value="series">Serie</SelectItem>
+                <SelectItem value="book">Libro</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
           <div className="flex flex-col gap-2">
             <Label htmlFor="title">Título</Label>
             <Input
@@ -137,11 +153,53 @@ export function NewRecommendationForm({
               className="border-input bg-background ring-offset-background placeholder:text-muted-foreground focus-visible:ring-ring flex min-h-[120px] w-full rounded-md border px-3 py-2 text-sm focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
             />
           </div>
+          {kind === "book" ? (
+            <div className="flex flex-col gap-2">
+              <Label htmlFor="bookAuthor">Autor</Label>
+              <Input
+                id="bookAuthor"
+                name="bookAuthor"
+                maxLength={300}
+                autoComplete="off"
+                value={bookAuthor}
+                onChange={(e) => setBookAuthor(e.target.value)}
+                placeholder="Opcional"
+              />
+            </div>
+          ) : null}
+          {kind === "movie" || kind === "series" ? (
+            <>
+              <div className="flex flex-col gap-2">
+                <Label htmlFor="director">Director</Label>
+                <Input
+                  id="director"
+                  name="director"
+                  maxLength={300}
+                  autoComplete="off"
+                  value={director}
+                  onChange={(e) => setDirector(e.target.value)}
+                  placeholder="Opcional"
+                />
+              </div>
+              <div className="flex flex-col gap-2">
+                <Label htmlFor="mainActors">Actores principales</Label>
+                <Input
+                  id="mainActors"
+                  name="mainActors"
+                  maxLength={500}
+                  autoComplete="off"
+                  value={mainActors}
+                  onChange={(e) => setMainActors(e.target.value)}
+                  placeholder="Opcional, separados por comas"
+                />
+              </div>
+            </>
+          ) : null}
           <div className="flex flex-col gap-2">
             <Label htmlFor="imageFile">Imagen de portada</Label>
             <p className="text-muted-foreground text-sm">
-              Elegí un archivo (máx. 4 MB) o pegá una URL más abajo. La subida a
-              Vercel ocurre solo al publicar.
+              Opcional: archivo (máx. 4 MB) o URL más abajo. La subida a Vercel
+              ocurre solo al publicar.
             </p>
             <Input
               ref={fileInputRef}
@@ -155,7 +213,6 @@ export function NewRecommendationForm({
                 const input = e.target;
                 const file = input.files?.[0];
                 setFilePickError("");
-                setImageFieldError("");
                 if (!file) {
                   pickedFileRef.current = null;
                   revokeAndClearPreviewUrl();
@@ -199,12 +256,11 @@ export function NewRecommendationForm({
               inputMode="url"
               autoComplete="off"
               spellCheck={false}
-              placeholder="https://…"
+              placeholder="https://… (opcional)"
               value={imageUrl}
               onChange={(e) => {
                 const v = e.target.value;
                 setImageUrl(v);
-                setImageFieldError("");
                 setFilePickError("");
                 if (v.trim()) {
                   pickedFileRef.current = null;
@@ -213,11 +269,6 @@ export function NewRecommendationForm({
                 }
               }}
             />
-            {imageFieldError ? (
-              <p className="text-destructive text-sm" role="alert">
-                {imageFieldError}
-              </p>
-            ) : null}
           </div>
           <div className="flex flex-col gap-2">
             <Label htmlFor="externalUrl">
@@ -228,10 +279,9 @@ export function NewRecommendationForm({
               name="externalUrl"
               type="url"
               inputMode="url"
-              required
               autoComplete="off"
               spellCheck={false}
-              placeholder="https://…"
+              placeholder="https://… (opcional)"
               value={externalUrl}
               onChange={(e) => setExternalUrl(e.target.value)}
             />
@@ -244,9 +294,13 @@ export function NewRecommendationForm({
           <RecommendationCreatePreview
             title={title}
             description={description}
+            kind={kind}
             imageUrl={imageUrl}
             imagePreviewUrl={previewObjectUrl ?? undefined}
             externalUrl={externalUrl}
+            bookAuthor={bookAuthor}
+            director={director}
+            mainActors={mainActors}
             authorLabel={authorLabel}
             userId={userId}
           />

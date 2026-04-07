@@ -60,16 +60,50 @@ function isPrivateBlobProxyImageUrl(u: string): boolean {
   }
 }
 
-const recommendationImageUrl = z.string().trim().superRefine((u, ctx) => {
-  if (isPrivateBlobProxyImageUrl(u)) return;
-  const r = httpUrl.safeParse(u);
-  if (!r.success) {
-    ctx.addIssue({
-      code: "custom",
-      message: r.error.issues[0]?.message ?? "URL inválida.",
-    });
-  }
-});
+const recommendationImageUrl = z
+  .string()
+  .trim()
+  .superRefine((u, ctx) => {
+    if (isPrivateBlobProxyImageUrl(u)) return;
+    const r = httpUrl.safeParse(u);
+    if (!r.success) {
+      ctx.addIssue({
+        code: "custom",
+        message: r.error.issues[0]?.message ?? "URL inválida.",
+      });
+    }
+  });
+
+function emptyFormFieldToUndefined(value: unknown): unknown {
+  if (typeof value !== "string") return value;
+  const t = value.trim();
+  return t === "" ? undefined : value;
+}
+
+const optionalHttpUrl = z.preprocess(
+  emptyFormFieldToUndefined,
+  httpUrl.optional(),
+);
+
+const optionalRecommendationImageUrl = z.preprocess(
+  emptyFormFieldToUndefined,
+  recommendationImageUrl.optional(),
+);
+
+const optionalMetaText = (max: number, message: string) =>
+  z.preprocess(
+    emptyFormFieldToUndefined,
+    z.string().trim().max(max, message).optional(),
+  );
+
+export const RECOMMENDATION_KINDS = ["movie", "series", "book"] as const;
+export type RecommendationKind = (typeof RECOMMENDATION_KINDS)[number];
+
+export function recommendationKindLabel(kind: RecommendationKind): string {
+  if (kind === "movie") return "Película";
+  if (kind === "series") return "Serie";
+  return "Libro";
+}
 
 export const CreateRecommendationSchema = z.object({
   title: z
@@ -82,6 +116,15 @@ export const CreateRecommendationSchema = z.object({
     .trim()
     .min(1, "La descripción es obligatoria.")
     .max(8000, "Máximo 8000 caracteres."),
-  imageUrl: recommendationImageUrl,
-  externalUrl: httpUrl,
+  kind: z.enum(RECOMMENDATION_KINDS, {
+    message: "Elegí un tipo válido (película, serie o libro).",
+  }),
+  imageUrl: optionalRecommendationImageUrl,
+  externalUrl: optionalHttpUrl,
+  bookAuthor: optionalMetaText(300, "Máximo 300 caracteres para el autor."),
+  director: optionalMetaText(300, "Máximo 300 caracteres para el director."),
+  mainActors: optionalMetaText(
+    500,
+    "Máximo 500 caracteres para actores principales.",
+  ),
 });
