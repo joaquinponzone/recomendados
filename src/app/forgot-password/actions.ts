@@ -13,7 +13,10 @@ export async function forgotPassword(
   formData: FormData,
 ): Promise<FormState> {
   if (!isEmailConfigured()) {
-    return { error: "Email is not configured. Contact an admin." };
+    return {
+      error:
+        "El correo no está configurado en el servidor. Ponte en contacto con un administrador.",
+    };
   }
 
   const parsed = ForgotPasswordSchema.safeParse({
@@ -26,7 +29,7 @@ export async function forgotPassword(
 
   const { email } = parsed.data;
   const genericSuccess =
-    "If an account with that email exists, a reset link has been sent.";
+    "Si existe una cuenta con ese correo, te enviamos un enlace para restablecer la contraseña.";
 
   const user = await getUserByEmail(email);
   if (!user) {
@@ -52,7 +55,10 @@ export async function forgotPassword(
   try {
     await sendPasswordResetEmail(email, resetUrl);
   } catch {
-    return { error: "Failed to send reset email. Try again later." };
+    return {
+      error:
+        "No pudimos enviar el correo de recuperación. Inténtalo de nuevo más tarde.",
+    };
   }
 
   return { success: genericSuccess };
