@@ -23,6 +23,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://recomendados.vercel.app"),
   title: "Recomendados",
   description:
     "Recomendaciones de películas, series y libros con votación por la comunidad.",
@@ -33,7 +34,7 @@ export const metadata: Metadata = {
     title: "Recomendados",
     description:
       "Recomendaciones de películas, series y libros con votación por la comunidad.",
-    url: "https://recomendados.app/",
+    url: "/",
   },
 };
 
