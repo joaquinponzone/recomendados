@@ -120,10 +120,53 @@ export interface RecommendationListRow {
   score: number;
 }
 
-export async function listRecommendationsWithScore(): Promise<
-  RecommendationListRow[]
-> {
-  const rows = await db
+export interface ListRecommendationsOptions {
+  kind?: RecommendationKind;
+  /** Normalized search on title and description (non-empty). */
+  q?: string;
+  sort?: "consensus" | "recent";
+  onlyMine?: boolean;
+  /** Required when `onlyMine` is true. */
+  sessionUserId?: number;
+}
+
+export async function listRecommendationsWithScore(
+  options: ListRecommendationsOptions = {},
+): Promise<RecommendationListRow[]> {
+  const {
+    kind,
+    q,
+    sort = "consensus",
+    onlyMine = false,
+    sessionUserId,
+  } = options;
+
+  const conditions = [];
+  if (kind) conditions.push(eq(recommendations.kind, kind));
+  if (onlyMine) {
+    if (sessionUserId === undefined) return [];
+    conditions.push(eq(recommendations.userId, sessionUserId));
+  }
+  const trimmedQ = q?.trim();
+  if (trimmedQ) {
+    const term = trimmedQ.toLowerCase();
+    conditions.push(
+      sql`(instr(lower(${recommendations.title}), ${term}) > 0 OR instr(lower(${recommendations.description}), ${term}) > 0)`,
+    );
+  }
+
+  const whereClause = conditions.length > 0 ? and(...conditions) : undefined;
+
+  const orderByClause =
+    sort === "recent"
+      ? [desc(recommendations.createdAt), desc(recommendations.id)]
+      : [
+          desc(scoreExpr),
+          desc(recommendations.createdAt),
+          desc(recommendations.id),
+        ];
+
+  const base = db
     .select({
       id: recommendations.id,
       userId: recommendations.userId,
@@ -141,12 +184,11 @@ export async function listRecommendationsWithScore(): Promise<
       score: scoreExpr,
     })
     .from(recommendations)
-    .innerJoin(users, eq(recommendations.userId, users.id))
-    .orderBy(
-      desc(scoreExpr),
-      desc(recommendations.createdAt),
-      desc(recommendations.id),
-    );
+    .innerJoin(users, eq(recommendations.userId, users.id));
+
+  const rows = await (whereClause ? base.where(whereClause) : base).orderBy(
+    ...orderByClause,
+  );
   return rows.map((r) => ({
     ...r,
     kind: r.kind as RecommendationKind,

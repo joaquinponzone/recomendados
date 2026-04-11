@@ -75,6 +75,8 @@ const recommendationImageUrl = z
   });
 
 function emptyFormFieldToUndefined(value: unknown): unknown {
+  // FormData omits absent fields → `null`; Zod optional strings reject null.
+  if (value === null || value === undefined) return undefined;
   if (typeof value !== "string") return value;
   const t = value.trim();
   return t === "" ? undefined : value;
@@ -103,6 +105,64 @@ export function recommendationKindLabel(kind: RecommendationKind): string {
   if (kind === "movie") return "Película";
   if (kind === "series") return "Serie";
   return "Libro";
+}
+
+export const HOME_RECOMMENDATION_SORT = ["consensus", "recent"] as const;
+export type HomeRecommendationSort = (typeof HOME_RECOMMENDATION_SORT)[number];
+
+function firstSearchParam(
+  value: string | string[] | undefined,
+): string | undefined {
+  if (value === undefined) return undefined;
+  return Array.isArray(value) ? value[0] : value;
+}
+
+export const HomeRecommendationsSearchSchema = z
+  .object({
+    kind: z.string().optional(),
+    q: z.string().max(200).optional(),
+    sort: z.string().optional(),
+    mine: z.string().optional(),
+  })
+  .transform((data) => {
+    const kindRaw = data.kind?.trim();
+    const kind =
+      kindRaw && RECOMMENDATION_KINDS.includes(kindRaw as RecommendationKind)
+        ? (kindRaw as RecommendationKind)
+        : undefined;
+
+    const qRaw = data.q?.trim();
+    const q = qRaw && qRaw.length > 0 ? qRaw.slice(0, 200) : undefined;
+
+    const sort: HomeRecommendationSort =
+      data.sort === "recent" ? "recent" : "consensus";
+
+    const onlyMine = data.mine === "1";
+
+    return { kind, q, sort, onlyMine };
+  });
+
+export type HomeRecommendationsParsed = z.infer<
+  typeof HomeRecommendationsSearchSchema
+>;
+
+export function parseHomeRecommendationsSearchParams(
+  raw: Record<string, string | string[] | undefined>,
+): HomeRecommendationsParsed {
+  const input = {
+    kind: firstSearchParam(raw.kind),
+    q: firstSearchParam(raw.q),
+    sort: firstSearchParam(raw.sort),
+    mine: firstSearchParam(raw.mine),
+  };
+  const result = HomeRecommendationsSearchSchema.safeParse(input);
+  if (result.success) return result.data;
+  return {
+    kind: undefined,
+    q: undefined,
+    sort: "consensus",
+    onlyMine: false,
+  };
 }
 
 export const CreateRecommendationSchema = z.object({
