@@ -60,11 +60,12 @@ export function RecommendationCard({
     <Card size={compact ? "sm" : "default"} className="overflow-hidden">
       <RecommendationHeroImage
         imageUrl={row.imageUrl}
+        kind={row.kind}
         variant={compact ? "compact" : "default"}
         emptyLabel={
           isPreview
             ? "Podés agregar portada con archivo o URL (opcional)"
-            : "Sin imagen de portada"
+            : undefined
         }
         className="rounded-none"
       />
