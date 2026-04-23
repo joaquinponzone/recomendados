@@ -12,7 +12,7 @@ export default function LoginPage() {
   const [state, action, pending] = useActionState(login, {});
 
   return (
-    <div className="flex min-h-screen items-center justify-center">
+    <div className="flex min-h-dvh items-center justify-center px-4">
       <Card className="w-full max-w-sm">
         <CardHeader>
           <CardTitle>Recomendados</CardTitle>
@@ -26,7 +26,6 @@ export default function LoginPage() {
                 name="email"
                 type="email"
                 autoComplete="email"
-                autoFocus
                 required
               />
             </div>
@@ -41,7 +40,9 @@ export default function LoginPage() {
               />
             </div>
             {state?.error && (
-              <p className="text-sm text-destructive">{state.error}</p>
+              <p className="text-sm text-destructive" role="alert" aria-live="polite">
+                {state.error}
+              </p>
             )}
             <Button type="submit" className="w-full" disabled={pending}>
               {pending ? "Ingresando…" : "Ingresar"}
@@ -50,14 +51,14 @@ export default function LoginPage() {
           <div className="mt-4 flex items-center justify-between text-sm">
             <Link
               href="/register"
-              className="text-muted-foreground hover:text-foreground transition-colors"
+              className="text-muted-foreground transition-colors hover:text-foreground"
             >
               Crear una cuenta
             </Link>
             {state?.emailConfigured && (
               <Link
                 href="/forgot-password"
-                className="text-muted-foreground hover:text-foreground transition-colors"
+                className="text-muted-foreground transition-colors hover:text-foreground"
               >
                 ¿Olvidaste tu contraseña?
               </Link>

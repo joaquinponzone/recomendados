@@ -1,6 +1,6 @@
 export function Footer() {
   return (
-    <footer className="mt-12 border-t py-6 text-center text-sm text-muted-foreground">
+    <footer className="mt-12 hidden border-t py-6 text-center text-sm text-muted-foreground md:block">
       Recomendados — hecho con ♥️ por{" "}
       <a
         href="https://github.com/joaquinponzone/recomendados"

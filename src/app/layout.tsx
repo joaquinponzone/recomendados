@@ -1,5 +1,5 @@
 import { Analytics } from "@vercel/analytics/next";
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist_Mono, Montserrat, Raleway } from "next/font/google";
 
 import "./globals.css";
@@ -35,6 +35,14 @@ export const metadata: Metadata = {
       "Recomendaciones de películas, series y libros con votación por la comunidad.",
     url: "https://recomendados.app/",
   },
+};
+
+export const viewport: Viewport = {
+  viewportFit: "cover",
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#ffffff" },
+    { media: "(prefers-color-scheme: dark)", color: "#1b1b18" },
+  ],
 };
 
 export default function RootLayout({

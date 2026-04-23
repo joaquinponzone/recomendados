@@ -21,9 +21,10 @@ export function RecommendationVoteForm({
         <input type="hidden" name="value" value="1" />
         <Button
           type="submit"
-          size="sm"
+          size="default"
           variant={currentVote === 1 ? "default" : "outline"}
           className={cn(currentVote === 1 && "border-primary")}
+          aria-label="Votar a favor"
         >
           +1
         </Button>
@@ -33,8 +34,9 @@ export function RecommendationVoteForm({
         <input type="hidden" name="value" value="-1" />
         <Button
           type="submit"
-          size="sm"
+          size="default"
           variant={currentVote === -1 ? "destructive" : "outline"}
+          aria-label="Votar en contra"
         >
           −1
         </Button>
