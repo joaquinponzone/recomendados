@@ -46,7 +46,7 @@ export function HomeFilters({
         aria-expanded={open}
         aria-controls="filters-form"
         className={cn(
-          "flex w-full items-center justify-between px-4 py-3 text-sm md:hidden",
+          "flex w-full items-center justify-between px-4 py-3 text-sm",
           open && "border-b border-border",
         )}
       >
@@ -73,10 +73,7 @@ export function HomeFilters({
         id="filters-form"
         method="get"
         action="/"
-        className={cn(
-          "flex-col gap-4 p-4",
-          !open ? "hidden md:flex" : "flex",
-        )}
+        className={cn("flex-col gap-4 p-4", !open ? "hidden" : "flex")}
       >
         <div className="grid w-full gap-3 sm:grid-cols-2 lg:grid-cols-4 lg:items-end">
           <label className="flex flex-col gap-1.5 text-sm">

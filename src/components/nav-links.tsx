@@ -28,20 +28,7 @@ export function NavLinks({
   return (
     <div className="hidden min-w-0 flex-1 items-center gap-4 text-sm md:flex">
       <div className="flex w-full min-w-0 items-center justify-end gap-6">
-        {profileHref ? (
-          <Link
-            href={profileHref}
-            aria-label="Mi perfil"
-            className={cn(
-              "flex items-center gap-1.5 transition-colors hover:text-foreground",
-              pathname === profileHref
-                ? "border-b-2 border-primary font-medium text-foreground"
-                : "text-muted-foreground duration-700 animate-in fade-in-0",
-            )}
-          >
-            Mi perfil
-          </Link>
-        ) : null}
+        
         {baseLinks.map(({ href, label, exact }) => {
           const active = exact ? pathname === href : pathname.startsWith(href);
           return (
@@ -59,6 +46,20 @@ export function NavLinks({
             </Link>
           );
         })}
+        {profileHref ? (
+          <Link
+            href={profileHref}
+            aria-label="Mi perfil"
+            className={cn(
+              "flex items-center gap-1.5 transition-colors hover:text-foreground",
+              pathname === profileHref
+                ? "border-b-2 border-primary font-medium text-foreground"
+                : "text-muted-foreground duration-700 animate-in fade-in-0",
+            )}
+          >
+            Mi perfil
+          </Link>
+        ) : null}
         <form action={logout}>
           <button
             type="submit"

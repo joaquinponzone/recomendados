@@ -1,24 +1,26 @@
 import { Analytics } from "@vercel/analytics/next";
 import type { Metadata, Viewport } from "next";
-import { Geist_Mono, Montserrat, Raleway } from "next/font/google";
+import { JetBrains_Mono, Merriweather, Source_Serif_4 } from "next/font/google";
 
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { ScreenSizeIndicator } from "@/components/ui/screen-size-indicator";
 import { cn } from "@/lib/utils";
 
-const ralewayHeading = Raleway({
+const sourceSerif4Heading = Source_Serif_4({
   subsets: ["latin"],
   variable: "--font-heading",
 });
 
-const montserrat = Montserrat({
+const merriweather = Merriweather({
   subsets: ["latin"],
+  weight: ["300", "400", "700"],
   variable: "--font-sans",
 });
 
-const geistMono = Geist_Mono({
+const jetbrainsMono = JetBrains_Mono({
   subsets: ["latin"],
+  weight: ["400", "500"],
   variable: "--font-mono",
 });
 
@@ -41,8 +43,8 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   viewportFit: "cover",
   themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#ffffff" },
-    { media: "(prefers-color-scheme: dark)", color: "#1b1b18" },
+    { media: "(prefers-color-scheme: light)", color: "#ddd490" },
+    { media: "(prefers-color-scheme: dark)", color: "#454230" },
   ],
 };
 
@@ -58,9 +60,9 @@ export default function RootLayout({
       className={cn(
         "antialiased h-100dvh",
         "font-sans",
-        geistMono.variable,
-        montserrat.variable,
-        ralewayHeading.variable,
+        jetbrainsMono.variable,
+        merriweather.variable,
+        sourceSerif4Heading.variable,
       )}
     >
       <body>
