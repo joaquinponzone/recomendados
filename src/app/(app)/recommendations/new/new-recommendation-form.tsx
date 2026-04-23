@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { EyeIcon, EyeOffIcon } from "lucide-react";
 import {
   useActionState,
   useCallback,
@@ -12,6 +13,7 @@ import {
 
 import { createRecommendation } from "@/app/(app)/recommendations/new/actions";
 import { RecommendationCreatePreview } from "@/components/recommendation-create-preview";
+import { cn } from "@/lib/utils";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -71,6 +73,7 @@ export function NewRecommendationForm({
   const [mainActors, setMainActors] = useState("");
   const [filePickError, setFilePickError] = useState("");
   const [previewObjectUrl, setPreviewObjectUrl] = useState<string | null>(null);
+  const [showMobilePreview, setShowMobilePreview] = useState(false);
   const titleInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -150,7 +153,7 @@ export function NewRecommendationForm({
               autoComplete="off"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              className="border-input bg-background ring-offset-background placeholder:text-muted-foreground focus-visible:ring-ring flex min-h-[120px] w-full rounded-md border px-3 py-2 text-sm focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
+              className="flex min-h-[120px] w-full rounded-2xl border border-input bg-input/30 px-3 py-2 text-base outline-none transition-colors placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm"
             />
           </div>
           {kind === "book" ? (
@@ -290,7 +293,22 @@ export function NewRecommendationForm({
             {pending ? "Publicando…" : "Publicar"}
           </Button>
         </form>
-        <div className="lg:sticky lg:top-6">
+
+        {/* Mobile preview toggle */}
+        <button
+          type="button"
+          onClick={() => setShowMobilePreview((v) => !v)}
+          className="flex items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-foreground lg:hidden"
+        >
+          {showMobilePreview ? (
+            <EyeOffIcon className="size-4" aria-hidden="true" />
+          ) : (
+            <EyeIcon className="size-4" aria-hidden="true" />
+          )}
+          {showMobilePreview ? "Ocultar vista previa" : "Ver vista previa"}
+        </button>
+
+        <div className={cn("lg:sticky lg:top-6", !showMobilePreview && "hidden lg:block")}>
           <RecommendationCreatePreview
             title={title}
             description={description}

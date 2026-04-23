@@ -164,16 +164,16 @@ export function RecommendationCard({
         />
         <div className="flex gap-2">
           {isPreview ? (
-            <Button variant="ghost" size="sm" disabled>
+            <Button variant="ghost" size="default" disabled>
               Ver
             </Button>
           ) : (
-            <Button variant="ghost" size="sm" asChild>
+            <Button variant="ghost" size="default" asChild>
               <Link href={`/recommendations/${row.id}`}>Ver</Link>
             </Button>
           )}
           {externalOk && row.externalUrl ? (
-            <Button variant="outline" size="sm" asChild>
+            <Button variant="outline" size="default" asChild>
               <a
                 href={row.externalUrl.trim()}
                 target="_blank"
@@ -183,7 +183,7 @@ export function RecommendationCard({
               </a>
             </Button>
           ) : (
-            <Button variant="outline" size="sm" disabled>
+            <Button variant="outline" size="default" disabled>
               Ficha
             </Button>
           )}

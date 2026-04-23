@@ -12,7 +12,7 @@ export default function ForgotPasswordPage() {
   const [state, action, pending] = useActionState(forgotPassword, {});
 
   return (
-    <div className="flex min-h-screen items-center justify-center">
+    <div className="flex min-h-dvh items-center justify-center px-4">
       <Card className="w-full max-w-sm">
         <CardHeader>
           <CardTitle>Restablecer contraseña</CardTitle>
@@ -37,12 +37,13 @@ export default function ForgotPasswordPage() {
                     name="email"
                     type="email"
                     autoComplete="email"
-                    autoFocus
                     required
                   />
                 </div>
                 {state?.error && (
-                  <p className="text-sm text-destructive">{state.error}</p>
+                  <p className="text-sm text-destructive" role="alert" aria-live="polite">
+                    {state.error}
+                  </p>
                 )}
                 <Button type="submit" className="w-full" disabled={pending}>
                   {pending ? "Enviando…" : "Enviar enlace"}
@@ -51,7 +52,7 @@ export default function ForgotPasswordPage() {
               <div className="mt-4 text-sm">
                 <Link
                   href="/login"
-                  className="text-muted-foreground hover:text-foreground transition-colors"
+                  className="text-muted-foreground transition-colors hover:text-foreground"
                 >
                   Volver al inicio de sesión
                 </Link>

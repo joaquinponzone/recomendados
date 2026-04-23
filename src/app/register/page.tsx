@@ -12,7 +12,7 @@ export default function RegisterPage() {
   const [state, action, pending] = useActionState(register, {});
 
   return (
-    <div className="flex min-h-screen items-center justify-center">
+    <div className="flex min-h-dvh items-center justify-center px-4">
       <Card className="w-full max-w-sm">
         <CardHeader>
           <CardTitle>Crear cuenta</CardTitle>
@@ -32,7 +32,12 @@ export default function RegisterPage() {
               <form action={action} className="space-y-4">
                 <div className="space-y-2">
                   <Label htmlFor="name">Nombre</Label>
-                  <Input id="name" name="name" autoFocus required />
+                  <Input
+                    id="name"
+                    name="name"
+                    autoComplete="name"
+                    required
+                  />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="email">Correo electrónico</Label>
@@ -56,7 +61,9 @@ export default function RegisterPage() {
                   />
                 </div>
                 {state?.error && (
-                  <p className="text-sm text-destructive">{state.error}</p>
+                  <p className="text-sm text-destructive" role="alert" aria-live="polite">
+                    {state.error}
+                  </p>
                 )}
                 <Button type="submit" className="w-full" disabled={pending}>
                   {pending ? "Creando…" : "Crear cuenta"}
@@ -65,7 +72,7 @@ export default function RegisterPage() {
               <div className="mt-4 text-sm">
                 <Link
                   href="/login"
-                  className="text-muted-foreground hover:text-foreground transition-colors"
+                  className="text-muted-foreground transition-colors hover:text-foreground"
                 >
                   ¿Ya tenés cuenta? Iniciá sesión
                 </Link>

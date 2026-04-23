@@ -1,47 +1,18 @@
 "use client";
 
-import {
-  HomeIcon,
-  LogOutIcon,
-  PlusCircleIcon,
-  SettingsIcon,
-  UserIcon,
-  UsersIcon,
-} from "lucide-react";
+import { LogOutIcon } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { logout } from "@/app/actions/logout";
 import { cn } from "@/lib/utils";
 
 const links = [
-  {
-    href: "/",
-    label: "Inicio",
-    exact: true,
-    icon: <HomeIcon className="block size-5 md:hidden" />,
-  },
-  {
-    href: "/recommendations/new",
-    label: "Nueva",
-    exact: false,
-    icon: <PlusCircleIcon className="block size-5 md:hidden" />,
-  },
-  {
-    href: "/settings",
-    label: "Configuración",
-    exact: false,
-    icon: <SettingsIcon className="block size-5 md:hidden" />,
-  },
+  { href: "/", label: "Inicio", exact: true },
+  { href: "/recommendations/new", label: "Nueva", exact: false },
+  { href: "/settings", label: "Configuración", exact: false },
 ];
 
-const adminLinks = [
-  {
-    href: "/admin/users",
-    label: "Usuarios",
-    exact: false,
-    icon: <UsersIcon className="block size-5 md:hidden" />,
-  },
-];
+const adminLinks = [{ href: "/admin/users", label: "Usuarios", exact: false }];
 
 export function NavLinks({
   role,
@@ -55,23 +26,23 @@ export function NavLinks({
   const profileHref = userId != null ? `/users/${userId}` : null;
 
   return (
-    <div className="flex min-w-0 flex-1 items-center gap-4 text-sm">
+    <div className="hidden min-w-0 flex-1 items-center gap-4 text-sm md:flex">
       <div className="flex w-full min-w-0 items-center justify-end gap-6">
         {profileHref ? (
           <Link
             href={profileHref}
+            aria-label="Mi perfil"
             className={cn(
               "flex items-center gap-1.5 transition-colors hover:text-foreground",
               pathname === profileHref
-                ? "font-medium text-foreground md:border-b-2 md:border-primary"
+                ? "border-b-2 border-primary font-medium text-foreground"
                 : "text-muted-foreground duration-700 animate-in fade-in-0",
             )}
           >
-            <span className="hidden md:block">Mi perfil</span>
-            <UserIcon className="block size-5 md:hidden" />
+            Mi perfil
           </Link>
         ) : null}
-        {baseLinks.map(({ href, label, exact, icon }) => {
+        {baseLinks.map(({ href, label, exact }) => {
           const active = exact ? pathname === href : pathname.startsWith(href);
           return (
             <Link
@@ -80,22 +51,22 @@ export function NavLinks({
               className={cn(
                 "flex items-center gap-1.5 transition-colors hover:text-foreground",
                 active
-                  ? "font-medium text-foreground md:border-b-2 md:border-primary"
+                  ? "border-b-2 border-primary font-medium text-foreground"
                   : "text-muted-foreground duration-700 animate-in fade-in-0",
               )}
             >
-              <span className="hidden md:block">{label}</span>
-              <span className="block md:hidden">{icon}</span>
+              {label}
             </Link>
           );
         })}
         <form action={logout}>
           <button
             type="submit"
-            className="flex cursor-pointer items-center gap-1.5 text-muted-foreground transition-colors duration-700 animate-in fade-in-0 hover:text-foreground"
+            aria-label="Cerrar sesión"
+            className="flex cursor-pointer items-center gap-1.5 text-destructive transition-colors duration-700 animate-in fade-in-0 hover:text-destructive/80"
           >
-            <span className="hidden text-destructive md:block">Salir</span>
-            <LogOutIcon className="block size-5 text-destructive md:hidden" />
+            <LogOutIcon className="size-4" aria-hidden="true" />
+            Salir
           </button>
         </form>
       </div>

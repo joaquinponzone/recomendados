@@ -41,7 +41,6 @@ function ResetPasswordForm() {
           name="password"
           type="password"
           autoComplete="new-password"
-          autoFocus
           required
           minLength={8}
         />
@@ -58,7 +57,9 @@ function ResetPasswordForm() {
         />
       </div>
       {state?.error && (
-        <p className="text-sm text-destructive">{state.error}</p>
+        <p className="text-sm text-destructive" role="alert" aria-live="polite">
+          {state.error}
+        </p>
       )}
       <Button type="submit" className="w-full" disabled={pending}>
         {pending ? "Restableciendo…" : "Restablecer contraseña"}
@@ -69,7 +70,7 @@ function ResetPasswordForm() {
 
 export default function ResetPasswordPage() {
   return (
-    <div className="flex min-h-screen items-center justify-center">
+    <div className="flex min-h-dvh items-center justify-center px-4">
       <Card className="w-full max-w-sm">
         <CardHeader>
           <CardTitle>Establecer nueva contraseña</CardTitle>
